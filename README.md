@@ -11,9 +11,9 @@ Currently we are at an early stage of development (just a couple of weeks of wor
 The first Fossa satellite, FossaSat-1 was launched on December 12, 2019 and it is still in evaluation stage by the Fossa team, so it is important **not to communicate to the satellity and only listen** until the Fossa team says otherwise. 
 
 FossaSat-1 is currently in a healthy state and sending packets, however several issues were found and are being evaluated:
-* Satellite antenna and solar panels might not be properly deployed. Received signals from the satellite were too weak compared with theoretical values and simulations which could indicate an improper deployment of the antenna or no deployment at all. Currently the team is trying to command an emergency deployment. It will be not possible to receive satellite signals without huge antennas until this is done.
-* It was discovered a misconfiguration on FossaSat-1 LoRa module. The syncWord parameter used is `0x0F0F` which is not documented and not compatible with sx127x receivers. This means that even if the antenna deployment works, **it will be difficult to communicate with FossaSat-1 with a sx127x modules** although not impossible as [this was already achieved](https://twitter.com/G4lile0/status/1204311425025486848) with antenna 4 x 23 el (DK7ZB) with tracking, 20 cable, preamp 20 dB, 2 way splitter and module RFM98.
-* The satellite might be rotating. The satellite has a Passive Magnetic Stabilization (PMS) system and the Fossa team pointed out that it seems to be stabilizing gradually, so signal quality should improve.
+* Satellite antenna and solar panels might not be properly deployed. Received signals from the satellite were too weak compared with theoretical values and simulations which could indicate an improper deployment of the antenna or no deployment at all. The team has tried to command an emergency deployment using high gain antennas during several days with no success.  The dyneema wire holding the solar panels and the anntena is expected to degrade in the orbit atmosphere over the next weeks or months. However it will be highly unlikely to be able to communicate by then as it has been transmitting in short circuit for a long time. Due to this it is not possible to receive FossaSat-1 signals without huge antennas.
+* It was discovered a misconfiguration on FossaSat-1 LoRa module. The syncWord parameter used is `0x0F0F` which is not documented and not compatible with sx127x receivers. This means that even with high gain antennas, **it is really difficult to communicate with FossaSat-1 with a sx127x modules** although not impossible as [this was already achieved](https://twitter.com/G4lile0/status/1204311425025486848) with antenna 4 x 23 el (DK7ZB) with tracking, 20 cable, preamp 20 dB, 2 way splitter and module RFM98.
+* The satellite might be rotating. The satellite has a Passive Magnetic Stabilization (PMS) system and the Fossa team pointed out that it seems to be stabilizing gradually.
 
 The Fossa team has announced that **two new satellites will be launched on March 2020 and those will be 100% compatible** with all the boards including sx127x, so at this moment the priority is keep improving the project, try to receive communications form FossaSat-1 with high gain antenas and be prepared for the next launch on March when all bords will be compatible. 
 
@@ -27,6 +27,11 @@ We are using Telegram as the mean of communication for the project, there are al
 * **Heltec WiFi LoRa 32 V2** (433MHz SX1278) https://heltec.org/project/wifi-lora-32/
 * **TTGO LoRa32 V1** (433MHz SX1278)
 * **TTGO LoRa32 V2** (433MHz SX1278)
+* **T-BEAM + OLED** (433MHz SX1278)
+* **ESP32 dev board + SX126X with crystal (Custom build, OLED optional)**
+* **ESP32 dev board + SX126X with TCXO (Custom build, OLED optional)**
+* **ESP32 dev board + SX127X (Custom build, OLED optional)**
+* **TTGO LoRa32 V2 (Manualy swaped SX1267 to SX1278)**
 
 ## Supported modules
 * sx126x
@@ -37,10 +42,9 @@ We are using Telegram as the mean of communication for the project, there are al
 </p>
 
 # Quick Install
-This project is ready to use with [Platformio](https://platformio.org/). It will take care of all dependencies automatically when building the project. It can also be used with Arduino IDE.
+This project is ready to use with [Platformio](https://platformio.org/). It will take care of all dependencies automatically when building the project. It can also be used with [Arduino IDE](https://github.com/G4lile0/ESP32-OLED-Fossa-GroundStation/wiki/Arduino-IDE).
 
-## Platformio (recommended)
-Arduino ide instructions bellow.
+## Platformio (strongly recommended)
 ### Installing platformio
 Platformio can be installed as a plugin for many IDEs. You can find a complete list here: https://docs.platformio.org/en/latest/ide.html#desktop-ide
 
@@ -54,76 +58,20 @@ Once you have cloned this project to a local directory, you can open it on Visua
 
 ![Add folder to workspace VSCode](/doc/images/add_folder_to_workspace.png "Add folder to workspace VSCode")
 
-Then select the `src` folder inside the repository and click open.
+Then select the `ESP32-OLED-Fossa-GroundStation` folder of the repository and click open, make sure it is the root folder and that it has the platformio.ino inside.
 
 ![Select folder](/doc/images/Select_folder.png "Select folder")
 
-After that, the project should be loaded in visual studio and ready to configure and build.
-
-### Configure the project
-First we need to select the board. To do so, open the `src/Fossa_GroundStation/platformio.ini` file and uncomment one of the lines at the beggining of the file depending on the board you are going to use TTGO or Heltec.
-
-```
-default_envs = 
-; Uncomment by deleting ";" in the line below to select the board
-;   heltec_wifi_lora_32
-;   ttgo-lora32-v1
-```
+After that, the project should be loaded in visual studio and ready to configure and build. **There is no need to change anything on the code if you have one of the supported boards. Platformio will compile for heltec_wifi_lora_32 but that is normal even if your board is not Heltec.**
 
 ## Build and upload the project
-Once the configuration is done, connect the board to the computer and click on the upload button from the platformio toolbar, or go to Terminal -> Run Task -> Upload.
+Connect the board to the computer and click on the upload button from the platformio toolbar, or go to Terminal -> Run Task -> Upload.
 
 ![Upload](/doc/images/upload.png "Upload")
 
-All the dependencies will be downloaded and installed automatically.
+All the dependencies will be configured and built automatically.
 
 Note that if you are a Linux used like me and it is your first time using platformio, you will have to install the udev rules to grant permissions to platformio to upload the program to the board. You can follow the instructions here: https://docs.platformio.org/en/latest/faq.html#platformio-udev-rules
-
-## Arduino IDE
-You can install the Arduino IDE by downloading it from [arduino.cc](https://www.arduino.cc/en/Main/Software), we recommend the last version, but you should use v1.6 or above.
-
-### Install the Arduino Core for ESP32
-First step is to install support for ESP32 based boards on the Arduino IDE through the Board Manager.
-
-* Start Arduino and open Preferences window.
-* Enter `https://dl.espressif.com/dl/package_esp32_index.json` into *Additional Board Manager URLs* field. You can add multiple URLs, separating them with commas. 
-* Open Boards Manager from Tools > Board menu and find *esp32* platform.
-* Select the version you need from a drop-down box.
-* Click *install* button.
-
-### Installing dependencies
-This project relies on several third party dependencies that must be installed in order to be able to build the binaries you can find the dependencies list below:
-
-* **RadioLib** (recomended v2.0.1) https://github.com/jgromes/RadioLib
-* **ArduinoJson** (recomended v6.13.0 **Required** >v6.0) https://github.com/bblanchon/ArduinoJson
-* **ESP8266_SSD1306** (recomended v4.1.0) https://github.com/ThingPulse/esp8266-oled-ssd1306
-* **AsyncTCP** (recomended v1.1.1) https://github.com/me-no-dev/AsyncTCP.git
-* **ESPAsyncWebServer** (recomended v1.2.3) https://github.com/me-no-dev/ESPAsyncWebServer.git
-* **ESPAsyncWiFiManager** (recomended v0.22) https://github.com/alanswx/ESPAsyncWiFiManager.git
-
-### Open the project in Arduino IDE
-Once you have cloned this project to a local directory, you can open it from the Arduino IDE in `File > Add folder` to workspace. And select the .ino file which is located in `src > Fossa_GroundStation > Fossa_GroundStation.ino`
-
-![Open on Arduino IDE](/doc/images/open_arduino.png "Open on Arduino IDE")
-
-### Build and upload the project
-The next step is to open the project file ` src/Fossa_GroundStation/BoardConfig.h` and uncomment the line matching your board by removing the leading `//`
-
-```
-// uncomment the line matching your board by removing the //
-
-//#define TTGO_V1
-//#define TTGO_V2
-//#define HELTEC
-```
-
-Connect the board to the computer, select your board in the Arduino IDE `Tools > Boards `
-
-![Select board on Arduino IDE](/doc/images/select_board_arduino.png "Select board on Arduino IDE")
-
-Then select the port where the board is connected to the computer in `Tools > Ports`
-
-And finally click on the rounded arrow button on the top to upload the project to the board or go to `Program > Upload (Ctl+U)`
 
 # Configure Station parameters
 The first time the board boot it will generate an AP with the name: FossaGroundStation. Once connected to that network you should be prompted with a web panel to configure the basic parameters of your station. If that were not the case, you can access the web panel using a web browser and going to the url 192.168.4.1.
@@ -133,31 +81,20 @@ The first time the board boot it will generate an AP with the name: FossaGroundS
   <img src="/doc/images/config_wifimanager.jpg" width="400" /> 
 </p>
 
-The parameters that must be filled are the following:
-* **SSID and PASSWORD:** The configuration parameters of you home WiFi AP so that the ground station can connect to internet.
-* **STATION NAME:** The name of your ground station. If you have registered yours in the [Fossa Ground Station Database](http://groundstationdatabase.com/database.php), the name should match.
-* **LATITUDE and LONGITUDE:** The geographical coordinates of the ground station. This serves the purpose of locating your ground station when you receive a package from the satellite.
-* **MQTT_SERVER and MQTT_PORT:** These are the address and port of the MQTT server of the project you should not change them if you want the Ground Station to be able to connect the main server. 
-* **MQTT_USER and MQTT_PASS:** These are the credentials of the project MQTT server, the purpose is to be able to collect the most packets from the satellite and manage all groundStations from this central server. You can ask for user and password in this telegram group: https://t.me/joinchat/DmYSElZahiJGwHX6jCzB3Q 
+You can find more information about the config parameters and the available boards on [the configuration wiki page](https://github.com/G4lile0/ESP32-OLED-Fossa-GroundStation/wiki/Ground-Station-configuration).
 
 # OTA Update
 This project implements OTA updates with both Arduino IDE and Platformio. To use this method the board and the computer have to be connected to the same network and be visible to each other.
 
-## Platformio
-In order to upload a new version through OTA in platformio, the `platformio.ide` file has to be edited uncommenting two lines to enable OTA and set the current IP Address of the station (it can be seen on the OLED display).
+You can find more information on [the wiki page about the OTA Update](https://github.com/G4lile0/ESP32-OLED-Fossa-GroundStation/wiki/OTA-Update).
 
-```
-# Uncomment these 2 lines by deleting ";" and edit as needed to upload through OTA
-;upload_protocol = espota
-;upload_port = IP_OF_THE_BOARD
-```
+# Dependencies
+This project relies on several third party dependencies that must be installed in order to be able to build the binaries. You can find the dependencies list below.
 
-Once this is done, the new firmware can be uploaded using the upload button normally as if the board were connected through USB.
+* **RadioLib (with modifications)** (**required:** v3.0.0@4m1g0) https://github.com/4m1g0/RadioLib
+* **ArduinoJson** (recomended v6.13.0 **Required** >v6.0) https://github.com/bblanchon/ArduinoJson
+* **ESP8266_SSD1306** (recomended v4.1.0) https://github.com/ThingPulse/esp8266-oled-ssd1306
+* **IoTWebConf2** (**Required:** 2.3.0@4m1g0) https://github.com/4m1g0/IotWebConf2
+* **PubSubCluent (with modifications)** (recomended 2.7) https://github.com/knolleary/pubsubclient
 
-## Arduino IDE
-To upload a new version through OTA on Arduino, you have to navigate to `Tools > port` and, if the computer is in the same network it should detect a network port for the ESP32. If that is the case, select the network port.
-
-Once this is done, the new firmware can be uploaded normally using the upload button or navigating to `Program > upload`
-Arduino 
-
-
+**Note for Arduino IDE Users**: Some of this libraries have modifications compared to the original ones, so make sure you use the version listed here or just copy the libraries from the `lib`folder to avoid problems. On PubSubClient it is mandatory to set `MQTT_MAX_PACKET_SIZE` to 1000 on the `PubSubClient.h` file. Platformio users don't have to worry about this as Platformio handle all of this automatically.
